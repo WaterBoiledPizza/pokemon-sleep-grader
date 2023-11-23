@@ -28,7 +28,6 @@
             [100, 'S']
         ]
 
-
         function calculate_score() {
             let pokemon = document.getElementById("list_pokemons").value
             let nature = document.getElementById("list_natures").value
@@ -39,6 +38,7 @@
             let score_nature = Nature2Score[nature][idx]
             explain_str += "[Nature] " + score_nature
             let score_subskill = 0
+            let score_subskill10 = 0
 
             // get score
             explain_str += " + [Subskill] "
@@ -46,14 +46,14 @@
                 iv = document.getElementById("list_sub_" + ii).value
                 let sii = Subskill2Score[iv][idx] * LevelScaling[ii]
                 score_subskill += sii
+                if(ii==0){score_subskill10 = sii}
                 explain_str += sii
                 if (ii != 4) {
                     explain_str += " + "
                 }
             }
             total_score = score_nature + score_subskill
-
-
+            total_score10 = score_nature + score_subskill10
 
             // calculate percentile
             var percentile_cache = null
@@ -71,6 +71,22 @@
                 }
             }
 
+            // calculate percentile10
+            var percentile_cache10 = null
+            if (idx == 0) {
+                percentile_cache10 = PercentileBerry10
+            } else if (idx == 1) {
+                percentile_cache10 = PercentileIngredient10
+            } else {
+                percentile_cache10 = PercentileSkill10
+            }
+            var pct_ii10 = 0
+            for (; pct_ii10 < percentile_cache10.length; pct_ii10++) {
+                if (percentile_cache10[pct_ii10] >= total_score10) {
+                    break
+                }
+            }
+            
             // get grade 
             var grade_idx = 0
             for (let ii = 0; ii < Score2Grade.length; ii++) {
@@ -79,7 +95,17 @@
                     break;
                 }
             }
-            grade = Score2Grade[grade_idx][1]
+            grade = Score2Grade[grade_idx][1]            
+
+            // get grade10 
+            var grade_idx10 = 0
+            for (let ii = 0; ii < Score2Grade.length; ii++) {
+                grade_idx10 = ii
+                if (pct_ii10 <= Score2Grade[ii][0]) {
+                    break;
+                }
+            }
+            grade10 = Score2Grade[grade_idx10][1]
 
             // render
             document.getElementById("score").textContent = total_score
@@ -87,6 +113,11 @@
             document.getElementById("percentile").textContent = pct_ii + "/100"
             document.getElementById("txt-detail").textContent = explain_str
             console.log("Score: " + total_score + " | Grade: " + grade + " | Percentile: " + pct_ii)
+
+            document.getElementById("score10").textContent = total_score10
+            document.getElementById("grade10").textContent = grade10
+            document.getElementById("percentile10").textContent = pct_ii10 + "/100"
+            console.log("Score: " + total_score10 + " | Grade: " + grade10 + " | Percentile: " + pct_ii10)
         }
 
         function render() {
@@ -251,6 +282,13 @@
                                 <td id="score" class="h4">?</td>
                                 <td id="grade" class="h4">?</td>
                                 <td id="percentile" class="h4">?</td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+                            <tr>
+                                <td id="score10" class="h4">?</td>
+                                <td id="grade10" class="h4">?</td>
+                                <td id="percentile10" class="h4">?</td>
                             </tr>
                         </tbody>
                     </table>
