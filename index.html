@@ -39,6 +39,8 @@
             explain_str += "[Nature] " + score_nature
             let score_subskill = 0
             let score_subskill10 = 0
+            let score_subskill25 = 0
+            let score_subskill50 = 0
 
             // get score
             explain_str += " + [Subskill] "
@@ -46,7 +48,9 @@
                 iv = document.getElementById("list_sub_" + ii).value
                 let sii = Subskill2Score[iv][idx] * LevelScaling[ii]
                 score_subskill += sii
-                if(ii==0){score_subskill10 = sii}
+                if(ii==0){score_subskill10 = score_subskill}
+                if(ii==1){score_subskill25 = score_subskill}
+                if(ii==2){score_subskill50 = score_subskill}
                 explain_str += sii
                 if (ii != 4) {
                     explain_str += " + "
@@ -54,6 +58,8 @@
             }
             total_score = score_nature + score_subskill
             total_score10 = score_nature + score_subskill10
+            total_score25 = score_nature + score_subskill25
+            total_score50 = score_nature + score_subskill50
 
             // calculate percentile
             var percentile_cache = null
@@ -87,6 +93,38 @@
                 }
             }
             
+            // calculate percentile25
+            var percentile_cache25 = null
+            if (idx == 0) {
+                percentile_cache25 = PercentileBerry25
+            } else if (idx == 1) {
+                percentile_cache25 = PercentileIngredient25
+            } else {
+                percentile_cache25 = PercentileSkill25
+            }
+            var pct_ii25 = 0
+            for (; pct_ii25 < percentile_cache25.length; pct_ii25++) {
+                if (percentile_cache25[pct_ii25] >= total_score25) {
+                    break
+                }
+            }   
+            
+            // calculate percentile50
+            var percentile_cache50 = null
+            if (idx == 0) {
+                percentile_cache50 = PercentileBerry50
+            } else if (idx == 1) {
+                percentile_cache50 = PercentileIngredient50
+            } else {
+                percentile_cache50 = PercentileSkill50
+            }
+            var pct_ii50 = 0
+            for (; pct_ii50 < percentile_cache50.length; pct_ii50++) {
+                if (percentile_cache50[pct_ii50] >= total_score50) {
+                    break
+                }
+            }               
+
             // get grade 
             var grade_idx = 0
             for (let ii = 0; ii < Score2Grade.length; ii++) {
@@ -107,6 +145,26 @@
             }
             grade10 = Score2Grade[grade_idx10][1]
 
+            // get grade25
+            var grade_idx25 = 0
+            for (let ii = 0; ii < Score2Grade.length; ii++) {
+                grade_idx25 = ii
+                if (pct_ii25 <= Score2Grade[ii][0]) {
+                    break;
+                }
+            }
+            grade25 = Score2Grade[grade_idx25][1]            
+
+            // get grade50
+            var grade_idx50 = 0
+            for (let ii = 0; ii < Score2Grade.length; ii++) {
+                grade_idx50 = ii
+                if (pct_ii50 <= Score2Grade[ii][0]) {
+                    break;
+                }
+            }
+            grade50 = Score2Grade[grade_idx50][1]                   
+
             // render
             document.getElementById("score").textContent = total_score
             document.getElementById("grade").textContent = grade
@@ -118,6 +176,16 @@
             document.getElementById("grade10").textContent = grade10
             document.getElementById("percentile10").textContent = pct_ii10 + "/100"
             console.log("Score: " + total_score10 + " | Grade: " + grade10 + " | Percentile: " + pct_ii10)
+
+            document.getElementById("score25").textContent = total_score25
+            document.getElementById("grade25").textContent = grade25
+            document.getElementById("percentile25").textContent = pct_ii25 + "/100"
+            console.log("Score: " + total_score25 + " | Grade: " + grade25 + " | Percentile: " + pct_ii25)
+
+            document.getElementById("score50").textContent = total_score50
+            document.getElementById("grade50").textContent = grade50
+            document.getElementById("percentile50").textContent = pct_ii50 + "/100"
+            console.log("Score: " + total_score50 + " | Grade: " + grade50 + " | Percentile: " + pct_ii50)
         }
 
         function render() {
@@ -272,6 +340,7 @@
                     <table class="table text-center table-bordered">
                         <thead>
                             <tr>
+                                <th scope="col" class="col-4 h4"></th>
                                 <th scope="col" class="col-4 h4">Score</th>
                                 <th scope="col" class="col-4 h4">Grade</th>
                                 <th scope="col" class="col-4 h4">Percentile</th>
@@ -279,18 +348,36 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td id="score" class="h4">?</td>
-                                <td id="grade" class="h4">?</td>
-                                <td id="percentile" class="h4">?</td>
-                            </tr>
-                        </tbody>
-                        <tbody>
-                            <tr>
+                                <td class="h4">@10</td>
                                 <td id="score10" class="h4">?</td>
                                 <td id="grade10" class="h4">?</td>
                                 <td id="percentile10" class="h4">?</td>
                             </tr>
                         </tbody>
+                        <tbody>
+                            <tr>
+                                <td class="h4">@25</td>
+                                <td id="score25" class="h4">?</td>
+                                <td id="grade25" class="h4">?</td>
+                                <td id="percentile25" class="h4">?</td>
+                            </tr>
+                        </tbody>   
+                        <tbody>
+                            <tr>
+                                <td class="h4">@50</td>
+                                <td id="score50" class="h4">?</td>
+                                <td id="grade50" class="h4">?</td>
+                                <td id="percentile50" class="h4">?</td>
+                            </tr>
+                        </tbody>                         
+                        <tbody>
+                            <tr>
+                                <td class="h4">@100</td>
+                                <td id="score" class="h4">?</td>
+                                <td id="grade" class="h4">?</td>
+                                <td id="percentile" class="h4">?</td>
+                            </tr>
+                        </tbody>                                             
                     </table>
                 </div>
                 <hr />

@@ -99,9 +99,14 @@ LevelScaling = [1.5, 1.25, 1, 0.75, 0.5]
 for idx in range(3):
     all_scores = []
     for nn in Nature2Score:
-        for ss in itertools.permutations(Subskill2Score, r=5):
+        for ss in itertools.permutations(Subskill2Score, r=3):
             score = Nature2Score[nn][idx]
             score += sum(Subskill2Score[si][idx] * LevelScaling[ii] for (ii,si) in enumerate(ss))
             all_scores.append(score)
     all_scores = np.array(all_scores)
-    print(np.percentile(all_scores, range(1, 101, 1)))
+    p = np.percentile(all_scores, range(1, 101, 1)).tolist()
+    printText = ""
+    for i in p:
+        printText += f"{i}, "
+    print(printText)
+    print('\n')
